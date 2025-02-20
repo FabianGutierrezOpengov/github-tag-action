@@ -164,7 +164,7 @@ printf "History:\n---\n%s\n---\n" "$log"
 
 first_line=$(echo "$log" | head -n 1)
 
-case "$log" in
+case "$first_line" in
     *$major_string_token* ) new=$(semver -i major "$tag"); part="major";;
     *$minor_string_token* ) new=$(semver -i minor "$tag"); part="minor";;
     *$patch_string_token* ) new=$(semver -i patch "$tag"); part="patch";;
