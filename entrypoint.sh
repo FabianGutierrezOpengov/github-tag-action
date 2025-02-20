@@ -162,20 +162,21 @@ declare -A history_type=(
 log=${history_type[${branch_history}]}
 printf "History:\n---\n%s\n---\n" "$log"
 
+first_line=$(echo "$log" | head -n 1)
+
 case "$log" in
     *$major_string_token* ) new=$(semver -i major "$tag"); part="major";;
     *$minor_string_token* ) new=$(semver -i minor "$tag"); part="minor";;
     *$patch_string_token* ) new=$(semver -i patch "$tag"); part="patch";;
-    *$none_string_token* )
-        echo "Default bump was set to none. Skipping..."
-        setOutput "old_tag" "$tag"
-        setOutput "new_tag" "$tag"
-        setOutput "tag" "$tag"
-        setOutput "part" "$default_semvar_bump"
-        exit 0;;
     * )
-        if [ "$default_semvar_bump" == "none" ]
-        then
+        if [[ "$first_line" == *"$none_string_token"* ]]; then
+            echo "Default bump was set to none (found in first line). Skipping..."
+            setOutput "old_tag" "$tag"
+            setOutput "new_tag" "$tag"
+            setOutput "tag" "$tag"
+            setOutput "part" "none"
+            exit 0
+        elif [ "$default_semvar_bump" == "none" ]; then
             echo "Default bump was set to none. Skipping..."
             setOutput "old_tag" "$tag"
             setOutput "new_tag" "$tag"
